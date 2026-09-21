@@ -1,0 +1,33 @@
+{
+  "name": "local-project-manager",
+  "version": "0.1.0",
+  "description": "本地项目管理器：管理、启动、监控本地的各类项目和命令行工具",
+  "main": "./out/main/index.js",
+  "author": "leeo",
+  "private": true,
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "start": "electron-vite preview",
+    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
+    "postinstall": "node scripts/fix-electron-codesign.js"
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0",
+    "pidusage": "^3.0.2",
+    "tree-kill": "^1.2.2",
+    "zustand": "^4.5.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.9",
+    "@types/pidusage": "^2.0.5",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "electron": "31.7.7",
+    "electron-vite": "^2.3.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.5.3"
+  }
+}
