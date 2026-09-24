@@ -1,33 +1,23 @@
 {
   "name": "local-project-manager",
-  "version": "0.1.0",
-  "description": "本地项目管理器：管理、启动、监控本地的各类项目和命令行工具",
-  "main": "./out/main/index.js",
+  "version": "0.2.0",
+  "description": "命令行：看本机在跑什么项目、占了哪些端口，扫描本机的 electron / tauri / web 项目",
+  "type": "module",
   "author": "leeo",
   "private": true,
-  "scripts": {
-    "dev": "electron-vite dev",
-    "build": "electron-vite build",
-    "start": "electron-vite preview",
-    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
-    "postinstall": "node scripts/fix-electron-codesign.js"
+  "bin": {
+    "lpm": "./dist/cli.js"
   },
-  "dependencies": {
-    "electron-store": "^8.2.0",
-    "pidusage": "^3.0.2",
-    "tree-kill": "^1.2.2",
-    "zustand": "^4.5.5"
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json && chmod +x dist/cli.js",
+    "dev": "tsc -p tsconfig.json --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@types/node": "^20.14.9",
-    "@types/pidusage": "^2.0.5",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@vitejs/plugin-react": "^4.3.1",
-    "electron": "31.7.7",
-    "electron-vite": "^2.3.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
     "typescript": "^5.5.3"
   }
 }
