@@ -1,22 +1,6 @@
-import { execFile } from 'node:child_process'
-import { promisify } from 'node:util'
 import { findProjectRoot, identify } from './detect.js'
+import { run } from './proc.js'
 import type { Listener, PortScan, Project, RunningProject } from './types.js'
-
-const execFileAsync = promisify(execFile)
-
-/**
- * lsof 在遇到无权限的进程时会以非 0 退出，但 stdout 里仍有可用结果。
- * 这里把 stdout 捞出来，不让部分失败毁掉整次扫描。
- */
-async function run(cmd: string, args: string[]): Promise<string> {
-  try {
-    const { stdout } = await execFileAsync(cmd, args, { maxBuffer: 16 * 1024 * 1024 })
-    return stdout
-  } catch (err) {
-    return (err as { stdout?: string })?.stdout ?? ''
-  }
-}
 
 function parsePort(addr: string): number | null {
   const match = addr.match(/:(\d+)$/)

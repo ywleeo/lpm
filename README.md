@@ -1,8 +1,8 @@
 # lpm
 
-看本机在跑什么项目、占了哪些端口；扫出本机所有 electron / tauri / web 项目。
+看本机在跑什么项目、占了哪些端口；扫出本机所有 electron / tauri / web 项目；一条命令在后台启动、停止、重启某个项目。
 
-零运行时依赖的命令行工具，只读，不启动也不杀进程。
+零运行时依赖的命令行工具。
 
 ```
 $ lpm
@@ -68,6 +68,23 @@ ln -sf "$PWD/dist/cli.js" ~/.local/bin/lpm      # 不想碰 npm 全局目录时
 
 `lpm scan` 不加 `-r` 时，会扫 home 下存在的 `Code` `Projects` `Developer` `Work` `src` `repos` `workspace`。
 
+### 启动 / 停止 / 重启
+
+| 命令 | 作用 |
+|---|---|
+| `lpm start robin` | 在后台启动，lpm 立即返回 |
+| `lpm stop robin` | 停止 |
+| `lpm restart robin` | 先停再起 |
+| `lpm logs robin -f` | 跟踪日志，`-n 200` 看最后 200 行 |
+| `lpm start robin --cmd "pnpm dev"` | 不用推断的命令，改用指定的；之后 restart 会沿用这条 |
+
+项目可以写目录名、唯一前缀（`rob`）或路径；不写就是当前目录。名字匹配到多个时会列出来让你选，不会自己猜。
+
+- **后台运行**：项目跑在独立进程组里，关掉终端也不受影响。输出写到 `~/.lpm/logs/`，状态记在 `~/.lpm/run/`（可以用 `LPM_HOME` 改位置）
+- **启动失败当场报**：拉起后观察 1.5 秒，进程退出了就直接打印最后 20 行日志
+- **能停外部启动的项目**：你在别的终端手动 `npm run dev` 起的也能停和重启。lpm 从占用端口的进程往上找到真正的启动者（npm / pnpm / node / python / cargo …），连同子进程一起停掉。往上找的时候碰到 shell、编辑器或者不认识的进程就停下，也不会走出项目目录，所以不会把你的终端或 IDE 杀掉
+- **先礼后兵**：先发 SIGTERM，5 秒后还没退出的再发 SIGKILL
+
 ## 怎么做到的
 
 **端口 → 项目**
@@ -105,13 +122,18 @@ npm run dev        # tsc --watch
 npm run typecheck
 ```
 
-源码在 `src/`，一共六个文件：
+源码在 `src/`：
 
 ```
-cli.ts        参数解析和输出
+cli.ts        参数解析、ports / scan 输出
+manage.ts     start / stop / restart / logs 命令
+control.ts    启停逻辑：后台拉起、找启动者、停进程树
+resolve.ts    项目名 / 路径 → 项目
 ports.ts      端口扫描，按项目聚合
 projects.ts   磁盘扫描
 detect.ts     项目根定位、类型识别、启动命令推断
+proc.ts       进程表、cwd、信号
+state.ts      ~/.lpm 下的托管状态和日志路径
 format.ts     颜色、中文宽度对齐
 types.ts
 ```
